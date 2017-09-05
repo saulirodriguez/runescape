@@ -2,11 +2,13 @@ package com.agilesolutions.runescape.controller;
 
 import com.agilesolutions.runescape.exception.BadRequestException;
 import com.agilesolutions.runescape.exception.ResourceNotFoundException;
-import com.agilesolutions.runescape.model.ErrorInfo;
+import com.agilesolutions.runescape.model.Player;
+import com.agilesolutions.runescape.service.PlayerService;
+import com.agilesolutions.runescape.utils.ErrorInfo;
 import com.agilesolutions.runescape.model.Category;
-import com.agilesolutions.runescape.model.PlayerCategory;
 import com.agilesolutions.runescape.service.LoggerManager;
 import com.agilesolutions.runescape.service.CategoryService;
+import com.agilesolutions.runescape.utils.Utilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +30,10 @@ public class CategoryCtrl {
 
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private PlayerService playerService;
+    @Autowired
+    private Utilities utilities;
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Category>> findAll(@RequestParam(required = false) String name, @RequestParam(required = false) String description) {
@@ -54,7 +61,7 @@ public class CategoryCtrl {
             category.setId(null);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.categoryService.create(category));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.categoryService.save(category));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
@@ -68,22 +75,29 @@ public class CategoryCtrl {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/{categoryId}/player/{playerId}")
-    public ResponseEntity<Category> addPlayer(@RequestBody PlayerCategory playerCategory, @PathVariable Long categoryId, @PathVariable Long playerId) throws BadRequestException {
-        if (playerCategory.getLevel() == null) {
+    public ResponseEntity<Category> addPlayer(@RequestBody LinkedHashMap reqBody, @PathVariable Long categoryId, @PathVariable Long playerId) throws BadRequestException {
+        Integer level = (Integer) reqBody.get("level");
+        Integer score = (Integer) reqBody.get("score");
+
+        if (level == null) {
             throw new BadRequestException(this.resource, "Level Empty");
         }
-        if (playerCategory.getScore() == null) {
+        if (score == null) {
             throw new BadRequestException(this.resource, "Score Empty");
         }
 
-        return ResponseEntity.ok(this.categoryService.addPlayer(categoryId, playerId, playerCategory));
+        Player player = this.playerService.findOne(playerId);
+        Category category = this.categoryService.addPlayer(categoryId, player, level, score);
+        this.playerService.save(player);
+
+        return ResponseEntity.ok(category);
     }
 
     // Exceptions Handling
 
     @ExceptionHandler({ResourceNotFoundException.class, EmptyResultDataAccessException.class})
     public ResponseEntity<ErrorInfo> ResourceNotFoundHandler(HttpServletRequest req, Exception e) {
-        this.logError(req, e);
+        this.utilities.logRequestError(req, e);
         ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
         return new ResponseEntity<ErrorInfo>(error, HttpStatus.NOT_FOUND);
     }
@@ -94,22 +108,15 @@ public class CategoryCtrl {
             HttpMessageNotReadableException.class
     })
     public ResponseEntity<ErrorInfo> BadRequestHandler(HttpServletRequest req, Exception e) {
-        this.logError(req, e);
+        this.utilities.logRequestError(req, e);
         ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
         return new ResponseEntity<ErrorInfo>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorInfo> GenericErrorHandler(HttpServletRequest req, Exception e) {
-        this.logError(req, e);
+        this.utilities.logRequestError(req, e);
         ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
         return new ResponseEntity<ErrorInfo>(error, HttpStatus.SERVICE_UNAVAILABLE);
-    }
-
-    // Helper Methods
-
-    private void logError(HttpServletRequest req, Exception e) {
-        String reqUri = req.getMethod() + ": " + req.getRequestURI();
-        logger.log(reqUri + ":\n" + e.toString(), LoggerManager.Level.ERROR);
     }
 }

@@ -49,7 +49,7 @@ public class CategoryService {
         return this.categoryRepository.findOne(id);
     }
 
-    public Category create(Category category) {
+    public Category save(Category category) {
         if(category.getDescription() == null) {
             category.setDescription("");
         }
@@ -81,12 +81,16 @@ public class CategoryService {
         this.categoryRepository.delete(id);
     }
 
-    public Category addPlayer(Long categoryId, Long playerId, PlayerCategory playerCategory) {
-        Category cat = this.findOne(categoryId);
-        Player player = this.playerService.findOne(playerId);
-        logger.log(player);
-        logger.log(cat);
-        cat.addPlayer(player, playerCategory);
-        return cat;
+    public Category addPlayer(Long categoryId, Player player, Integer level, Integer score) {
+        Category category = this.findOne(categoryId);
+
+        PlayerCategory playerCategory = new PlayerCategory(level, score);
+        playerCategory.setPlayer(player);
+        playerCategory.setCategory(category);
+        player.getPlayerCategories().add(playerCategory);
+        System.out.println(category);
+        this.categoryRepository.save(category);
+//        cat.addPlayer(player, level, score);
+        return category;
     }
 }

@@ -1,36 +1,39 @@
 package com.agilesolutions.runescape.model;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+import java.io.Serializable;
 
 
-@Data
-@RequiredArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name="PLAYER_CATEGORY")
-public class PlayerCategory {
-    @EmbeddedId
-    private PlayerCategoryPK id;
-
+public class PlayerCategory  implements Serializable {
+    @Id
     @ManyToOne
-    @MapsId("playerId")
-    @JoinColumn(name = "PLAYER_ID")
+    @JoinColumn(name = "player_id")
+    @Setter @Getter
     private Player player;
 
+    @Id
     @ManyToOne
-    @MapsId("categoryId")
-    @JoinColumn(name = "CATEGORY_ID")
+    @JoinColumn(name = "category_id")
+    @Setter @Getter
     private Category category;
 
-    @NonNull
-    private Integer level;
-    @NonNull
-    private Integer score;
+    @Setter @Getter private Integer level;
+    @Setter @Getter private Integer score;
 
-//    public PlayerCategory(Integer level, Integer score) {
-//        this.setLevel(level);
-//        this.setScore(score);
-//    }
+    public PlayerCategory(Integer level, Integer score) {
+        this.setLevel(level);
+        this.setScore(score);
+    }
 }

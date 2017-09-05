@@ -1,29 +1,31 @@
 package com.agilesolutions.runescape.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
+//@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "PLAYER")
-public class Player {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String firstname;
-    private String lastname;
+public class Player extends BaseModel {
+    @Setter @Getter private String firstname;
+    @Setter @Getter private String lastname;
 
-    @OneToMany(mappedBy = "category")
-    private Set<PlayerCategory> categories = new HashSet<>();
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @Setter @Getter private Set<PlayerCategory> playerCategories;
 
-    public void addCategory(PlayerCategory pc) {
-        this.getCategories().add(pc);
+    public Player(String firstname, String lastname) {
+        super();
+        this.setFirstname(firstname);
+        this.setLastname(lastname);
+        this.setPlayerCategories(new HashSet<>());
     }
+//    public void addCategory(PlayerCategory pc) {
+//        this.getCategories().add(pc);
+//    }
 }

@@ -45,7 +45,7 @@ public class PlayerService {
         return this.playerRepository.findOne(id);
     }
 
-    public Player create(Player player) {
+    public Player save(Player player) {
         if(player.getLastname() == null) {
             player.setLastname("");
         }

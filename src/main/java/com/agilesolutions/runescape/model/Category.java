@@ -1,33 +1,42 @@
 package com.agilesolutions.runescape.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.HashSet;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name="CATEGORY")
-public class Category {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Category extends BaseModel {
+    @Setter @Getter
     private String name;
+    @Setter @Getter
     private String description;
 
-    @OneToMany(mappedBy = "player")
-    private Set<PlayerCategory> players = new HashSet<>();
+    @OneToMany(mappedBy = "category")
+    @JsonIgnore
+    @Setter @Getter private Set<PlayerCategory> players;
 
-    public void addPlayer(Player player, PlayerCategory playerCategory) {
-        playerCategory.setPlayer(player);
-        playerCategory.setCategory(this);
-//        PlayerCategory playerCategory = new PlayerCategory(player, this, level, score);
-        this.getPlayers().add(playerCategory);
-        player.addCategory(playerCategory);
+    public Category(String name, String description) {
+        super();
+        this.setName(name);
+        this.setDescription(description);
     }
+
+//    public void addPlayer(Player player, Integer level, Integer score) {
+//        PlayerCategory playerCategory = new PlayerCategory(level, score);
+//        playerCategory.setPlayer(player);
+//        playerCategory.setCategory(this);
+//        this.getPlayers().add(playerCategory);
+//        System.out.println(level + " -> " + score);
+//        player.addCategory(playerCategory);
+//    }
 }

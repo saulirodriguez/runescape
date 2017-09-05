@@ -1,4 +1,4 @@
-package com.agilesolutions.runescape.model;
+package com.agilesolutions.runescape.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

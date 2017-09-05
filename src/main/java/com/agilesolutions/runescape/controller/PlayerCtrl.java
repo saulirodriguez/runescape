@@ -2,10 +2,11 @@ package com.agilesolutions.runescape.controller;
 
 import com.agilesolutions.runescape.exception.BadRequestException;
 import com.agilesolutions.runescape.exception.ResourceNotFoundException;
-import com.agilesolutions.runescape.model.ErrorInfo;
+import com.agilesolutions.runescape.utils.ErrorInfo;
 import com.agilesolutions.runescape.model.Player;
 import com.agilesolutions.runescape.service.LoggerManager;
 import com.agilesolutions.runescape.service.PlayerService;
+import com.agilesolutions.runescape.utils.Utilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,8 @@ public class PlayerCtrl {
 
     @Autowired
     private PlayerService playerService;
+    @Autowired
+    private Utilities utilities;
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Player>> findAll(@RequestParam(required = false) String name, @RequestParam(required = false) String description) {
@@ -53,7 +56,7 @@ public class PlayerCtrl {
             player.setId(null);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.playerService.create(player));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.playerService.save(player));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
@@ -70,7 +73,7 @@ public class PlayerCtrl {
 
     @ExceptionHandler({ResourceNotFoundException.class, EmptyResultDataAccessException.class})
     public ResponseEntity<ErrorInfo> ResourceNotFoundHandler(HttpServletRequest req, Exception e) {
-        this.logError(req, e);
+        this.utilities.logRequestError(req, e);
         ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
         return new ResponseEntity<ErrorInfo>(error, HttpStatus.NOT_FOUND);
     }
@@ -81,22 +84,15 @@ public class PlayerCtrl {
             HttpMessageNotReadableException.class
     })
     public ResponseEntity<ErrorInfo> BadRequestHandler(HttpServletRequest req, Exception e) {
-        this.logError(req, e);
+        this.utilities.logRequestError(req, e);
         ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
         return new ResponseEntity<ErrorInfo>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorInfo> GenericErrorHandler(HttpServletRequest req, Exception e) {
-        this.logError(req, e);
+        this.utilities.logRequestError(req, e);
         ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
         return new ResponseEntity<ErrorInfo>(error, HttpStatus.SERVICE_UNAVAILABLE);
-    }
-
-    // Helper Methods
-
-    private void logError(HttpServletRequest req, Exception e) {
-        String reqUri = req.getMethod() + ": " + req.getRequestURI();
-        logger.log(reqUri + ":\n" + e.toString(), LoggerManager.Level.ERROR);
     }
 }
