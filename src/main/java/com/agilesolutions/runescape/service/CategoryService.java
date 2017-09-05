@@ -88,9 +88,9 @@ public class CategoryService {
         playerCategory.setPlayer(player);
         playerCategory.setCategory(category);
         player.getPlayerCategories().add(playerCategory);
-        System.out.println(category);
+
         this.categoryRepository.save(category);
-//        cat.addPlayer(player, level, score);
+
         return category;
     }
 }

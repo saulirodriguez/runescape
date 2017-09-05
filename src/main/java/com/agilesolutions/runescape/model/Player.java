@@ -1,6 +1,8 @@
 package com.agilesolutions.runescape.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,12 +14,15 @@ import java.util.Set;
 @Entity
 @Table(name = "PLAYER")
 public class Player extends BaseModel {
-    @Setter @Getter private String firstname;
-    @Setter @Getter private String lastname;
+    @Setter @Getter
+    private String firstname;
+    @Setter @Getter
+    private String lastname;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    @Setter @Getter private Set<PlayerCategory> playerCategories;
+    @JsonManagedReference
+    @Setter @Getter
+    private Set<PlayerCategory> playerCategories;
 
     public Player(String firstname, String lastname) {
         super();
@@ -25,7 +30,4 @@ public class Player extends BaseModel {
         this.setLastname(lastname);
         this.setPlayerCategories(new HashSet<>());
     }
-//    public void addCategory(PlayerCategory pc) {
-//        this.getCategories().add(pc);
-//    }
 }

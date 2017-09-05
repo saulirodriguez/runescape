@@ -1,6 +1,7 @@
 package com.agilesolutions.runescape.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,12 +21,14 @@ public class PlayerCategory  implements Serializable {
     @Id
     @ManyToOne
     @JoinColumn(name = "player_id")
+    @JsonBackReference
     @Setter @Getter
     private Player player;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonBackReference
     @Setter @Getter
     private Category category;
 

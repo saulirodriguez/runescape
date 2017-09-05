@@ -1,8 +1,10 @@
 package com.agilesolutions.runescape.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,8 +24,8 @@ public class Category extends BaseModel {
     private String description;
 
     @OneToMany(mappedBy = "category")
-    @JsonIgnore
-    @Setter @Getter private Set<PlayerCategory> players;
+    @JsonManagedReference
+    @Setter @Getter private Set<PlayerCategory> playersScores;
 
     public Category(String name, String description) {
         super();

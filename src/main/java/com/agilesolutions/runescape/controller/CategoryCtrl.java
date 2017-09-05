@@ -52,21 +52,24 @@ public class CategoryCtrl {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Category> create(@RequestBody Category category) throws BadRequestException {
-        if (category.getName() == null || category.getName().isEmpty()) {
-            throw new BadRequestException(this.resource, "Name Empty ");
+    public ResponseEntity<Category> create(@RequestBody LinkedHashMap reqBody) throws BadRequestException {
+        String name = reqBody.getOrDefault("name", "").toString();
+        String description = reqBody.getOrDefault("description", "").toString();
+
+        if(name.isEmpty()) {
+            throw new BadRequestException(this.resource, "Name Empty");
         }
 
-        if(category.getId() != null) {
-            category.setId(null);
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.categoryService.save(category));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(this.categoryService.save(new Category(name, description)));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public ResponseEntity<Category> put(@RequestBody Category category, @PathVariable Long id) throws ResourceNotFoundException {
-        return ResponseEntity.ok(this.categoryService.update(id, category));
+    public ResponseEntity<Category> put(@RequestBody LinkedHashMap reqBody, @PathVariable Long id) throws ResourceNotFoundException {
+        String name = reqBody.getOrDefault("name", "").toString();
+        String description = reqBody.getOrDefault("description", "").toString();
+
+        return ResponseEntity.ok(this.categoryService.update(id, new Category(name, description)));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")

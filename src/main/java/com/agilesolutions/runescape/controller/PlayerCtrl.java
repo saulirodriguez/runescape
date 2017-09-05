@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,21 +48,22 @@ public class PlayerCtrl {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Player> create(@RequestBody Player player) throws BadRequestException {
-        if (player.getFirstname() == null || player.getFirstname().isEmpty()) {
-            throw new BadRequestException(this.resource, "Firstname Empty ");
+    public ResponseEntity<Player> create(@RequestBody LinkedHashMap reqBody) throws BadRequestException {
+        String firstname = reqBody.getOrDefault("firstname", "").toString();
+        String lastname = reqBody.getOrDefault("lastname", "").toString();
+        if (firstname.isEmpty()) {
+            throw new BadRequestException(this.resource, "Firstname Empty");
         }
 
-        if(player.getId() != null) {
-            player.setId(null);
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.playerService.save(player));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.playerService.save(new Player(firstname, lastname)));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public ResponseEntity<Player> put(@RequestBody Player player, @PathVariable Long id) throws ResourceNotFoundException {
-        return ResponseEntity.ok(this.playerService.update(id, player));
+    public ResponseEntity<Player> put(@RequestBody LinkedHashMap reqBody, @PathVariable Long id) throws ResourceNotFoundException {
+        String firstname = reqBody.getOrDefault("firstname", "").toString();
+        String lastname = reqBody.getOrDefault("lastname", "").toString();
+
+        return ResponseEntity.ok(this.playerService.update(id, new Player(firstname, lastname)));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
