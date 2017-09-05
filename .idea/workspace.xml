@@ -2,13 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3bd5b705-76a1-4b2a-8e14-16276031dbb3" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/model/BaseModel.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/utils/Utilities.class" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_1_11.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_core_1_1_11.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_atteo_evo_inflector_1_2_2.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_jul_to_slf4j_1_7_25.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_log4j_over_slf4j_1_7_25.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_data_rest_1_5_6_RELEASE.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_logging_1_5_6_RELEASE.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/model/ErrorInfo.class" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_data_spring_data_rest_core_2_6_6_RELEASE.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_data_spring_data_rest_webmvc_2_6_6_RELEASE.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_hateoas_spring_hateoas_0_23_0_RELEASE.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_plugin_spring_plugin_core_1_2_0_RELEASE.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/agilesolutions/runescape/model/BaseModel.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/agilesolutions/runescape/utils/Utilities.java" />
       <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/agilesolutions/runescape/model/ErrorInfo.java" afterPath="$PROJECT_DIR$/src/main/java/com/agilesolutions/runescape/utils/ErrorInfo.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/model/ErrorInfo.class" afterPath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/utils/ErrorInfo.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/controller/CategoryCtrl.class" afterPath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/controller/CategoryCtrl.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/controller/PlayerCtrl.class" afterPath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/controller/PlayerCtrl.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/model/Category.class" afterPath="$PROJECT_DIR$/target/classes/com/agilesolutions/runescape/model/Category.class" />
