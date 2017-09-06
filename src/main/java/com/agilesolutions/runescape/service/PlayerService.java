@@ -13,43 +13,36 @@ import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
-    private LoggerManager logger = LoggerManager.getInstance();
     @Autowired
     private PlayerRepository playerRepository;
 
-    public List<Player> findAll(Optional<String> optionalFirstname, Optional<String> optionalLastname) {
+    public List<Player> findAll(Optional<String> optionalName) {
         List<Player> todoList = new ArrayList<>();
 
         this.playerRepository
                 .findAll()
                 .forEach(todoList::add);
 
-        if(optionalFirstname.isPresent()) {
-            String name = optionalFirstname.get().toLowerCase();
+        if(optionalName.isPresent()) {
+            String name = optionalName.get().toLowerCase();
             todoList = todoList.stream()
-                    .filter(player -> player.getFirstname().toLowerCase().contains(name))
-                    .collect(Collectors.toList());
-        }
-
-        if(optionalLastname.isPresent()) {
-            String description = optionalLastname.get().toLowerCase();
-            todoList = todoList.stream()
-                    .filter(player -> player.getLastname().toLowerCase().contains(description))
+                    .filter(player -> player.getName().toLowerCase().contains(name))
                     .collect(Collectors.toList());
         }
 
         return todoList;
     }
 
-    public Player findOne(Long id) {
-        return this.playerRepository.findOne(id);
+    public Player findOne(Long id) throws ResourceNotFoundException{
+        Player player = this.playerRepository.findOne(id);
+        if(player == null) {
+            throw new ResourceNotFoundException("Player", id);
+        }
+
+        return player;
     }
 
     public Player save(Player player) {
-        if(player.getLastname() == null) {
-            player.setLastname("");
-        }
-
         this.playerRepository.save(player);
         return player;
     }
@@ -58,18 +51,15 @@ public class PlayerService {
         Player t = this.playerRepository.findOne(id);
 
         if(t == null) {
-            throw new ResourceNotFoundException("Player");
+            throw new ResourceNotFoundException("Player", id);
         }
 
-        if(!player.getFirstname().isEmpty()) {
-            t.setFirstname(player.getFirstname());
-        }
-
-        if(!player.getLastname().isEmpty()) {
-            t.setLastname(player.getLastname());
+        if(!player.getName().isEmpty()) {
+            t.setName(player.getName());
         }
 
         this.playerRepository.save(t);
+
         return t;
     }
 

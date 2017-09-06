@@ -6,7 +6,7 @@ import com.agilesolutions.runescape.utils.ErrorInfo;
 import com.agilesolutions.runescape.model.Player;
 import com.agilesolutions.runescape.service.LoggerManager;
 import com.agilesolutions.runescape.service.PlayerService;
-import com.agilesolutions.runescape.utils.Utilities;
+import com.agilesolutions.runescape.service.Utilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -32,42 +32,47 @@ public class PlayerCtrl {
     private Utilities utilities;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Player>> findAll(@RequestParam(required = false) String name, @RequestParam(required = false) String description) {
+    public ResponseEntity<List<Player>> findAll(@RequestParam(required = false) String name) {
+        this.utilities.logRequest("GET", "/player");
         return ResponseEntity
-                .ok(this.playerService.findAll(Optional.ofNullable(name), Optional.ofNullable(description)));
+                .ok(this.playerService.findAll(Optional.ofNullable(name)));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public ResponseEntity<Player> findOne(@PathVariable Long id) throws ResourceNotFoundException {
-        Player todo = this.playerService.findOne(id);
-        if (todo == null) {
+        this.utilities.logRequest("GET", "/player/" + id);
+
+        Player player = this.playerService.findOne(id);
+        if (player == null) {
             throw new ResourceNotFoundException(this.resource);
         }
 
-        return ResponseEntity.ok(todo);
+        return ResponseEntity.ok(player);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Player> create(@RequestBody LinkedHashMap reqBody) throws BadRequestException {
-        String firstname = reqBody.getOrDefault("firstname", "").toString();
-        String lastname = reqBody.getOrDefault("lastname", "").toString();
-        if (firstname.isEmpty()) {
-            throw new BadRequestException(this.resource, "Firstname Empty");
+        this.utilities.logRequest("POST", "/player");
+        String name = reqBody.getOrDefault("name", "").toString();
+
+        if (name.isEmpty()) {
+            this.utilities.throwMissingParametersError(this.resource, "name");
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.playerService.save(new Player(firstname, lastname)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.playerService.save(new Player(name)));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     public ResponseEntity<Player> put(@RequestBody LinkedHashMap reqBody, @PathVariable Long id) throws ResourceNotFoundException {
-        String firstname = reqBody.getOrDefault("firstname", "").toString();
-        String lastname = reqBody.getOrDefault("lastname", "").toString();
+        this.utilities.logRequest("PUT", "/player/" + id);
+        String name = reqBody.getOrDefault("name", "").toString();
 
-        return ResponseEntity.ok(this.playerService.update(id, new Player(firstname, lastname)));
+        return ResponseEntity.ok(this.playerService.update(id, new Player(name)));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     public void delete(@PathVariable Long id) {
+        this.utilities.logRequest("DELETE", "/player/" + id);
         this.playerService.delete(id);
     }
 
@@ -75,26 +80,21 @@ public class PlayerCtrl {
 
     @ExceptionHandler({ResourceNotFoundException.class, EmptyResultDataAccessException.class})
     public ResponseEntity<ErrorInfo> ResourceNotFoundHandler(HttpServletRequest req, Exception e) {
-        this.utilities.logRequestError(req, e);
-        ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
-        return new ResponseEntity<ErrorInfo>(error, HttpStatus.NOT_FOUND);
+        return this.utilities.generateError(this.resource, req, e, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({
             BadRequestException.class,
             MethodArgumentTypeMismatchException.class,
-            HttpMessageNotReadableException.class
+            HttpMessageNotReadableException.class,
+            ClassCastException.class
     })
     public ResponseEntity<ErrorInfo> BadRequestHandler(HttpServletRequest req, Exception e) {
-        this.utilities.logRequestError(req, e);
-        ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
-        return new ResponseEntity<ErrorInfo>(error, HttpStatus.BAD_REQUEST);
+        return this.utilities.generateError(this.resource, req, e, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorInfo> GenericErrorHandler(HttpServletRequest req, Exception e) {
-        this.utilities.logRequestError(req, e);
-        ErrorInfo error = new ErrorInfo(this.resource, e.getMessage(), req.getMethod(), req.getRequestURI());
-        return new ResponseEntity<ErrorInfo>(error, HttpStatus.SERVICE_UNAVAILABLE);
+        return this.utilities.generateError(this.resource, req, e, HttpStatus.SERVICE_UNAVAILABLE);
     }
 }

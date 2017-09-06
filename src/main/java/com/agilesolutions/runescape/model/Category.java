@@ -9,15 +9,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Set;
 
 @NoArgsConstructor
 @Entity
 @Table(name="CATEGORY")
-public class Category extends BaseModel {
+public class Category {
+    @Id
+    @Setter @Getter
+    private String id;
     @Setter @Getter
     private String name;
     @Setter @Getter
@@ -27,18 +28,17 @@ public class Category extends BaseModel {
     @JsonManagedReference
     @Setter @Getter private Set<PlayerCategory> playersScores;
 
-    public Category(String name, String description) {
-        super();
+    public Category(String id, String name, String description) {
+        this.setId(id);
         this.setName(name);
         this.setDescription(description);
     }
 
-//    public void addPlayer(Player player, Integer level, Integer score) {
-//        PlayerCategory playerCategory = new PlayerCategory(level, score);
-//        playerCategory.setPlayer(player);
-//        playerCategory.setCategory(this);
-//        this.getPlayers().add(playerCategory);
-//        System.out.println(level + " -> " + score);
-//        player.addCategory(playerCategory);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Category)) {
+            return false;
+        }
+        return ((Category) o).getId().equals(this.getId());
+    }
 }

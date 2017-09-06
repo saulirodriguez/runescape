@@ -12,6 +12,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 
 @NoArgsConstructor
@@ -38,5 +41,23 @@ public class PlayerCategory  implements Serializable {
     public PlayerCategory(Integer level, Integer score) {
         this.setLevel(level);
         this.setScore(score);
+    }
+
+    public LinkedHashMap getPlayerInfo() {
+        LinkedHashMap set = new LinkedHashMap();
+        set.put("id", this.getPlayer().getId());
+        set.put("name", this.getPlayer().getName());
+        return set;
+    }
+
+    public LinkedHashMap getCategoryId() {
+        LinkedHashMap set = new LinkedHashMap();
+        set.put("id", this.getCategory().getId());
+        set.put("name", this.getCategory().getName());
+        return set;
+    }
+    @Override
+    public String toString() {
+        return this.getCategory().getId() + " " + this.getPlayer().getName();
     }
 }

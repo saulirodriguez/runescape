@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,8 +19,6 @@ public class CategoryService {
     private LoggerManager logger = LoggerManager.getInstance();
     @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    private PlayerService playerService;
 
     public List<Category> findAll(Optional<String> optionalName, Optional<String> optionalDescription) {
         List<Category> todoList = new ArrayList<>();
@@ -45,8 +44,13 @@ public class CategoryService {
         return todoList;
     }
 
-    public Category findOne(Long id) {
-        return this.categoryRepository.findOne(id);
+    public Category findOne(String id) throws ResourceNotFoundException {
+        Category category = this.categoryRepository.findOne(id);
+        if(category == null) {
+            throw new ResourceNotFoundException("Category: " + id);
+        }
+
+        return category;
     }
 
     public Category save(Category category) {
@@ -58,11 +62,11 @@ public class CategoryService {
         return category;
     }
 
-    public Category update(Long id, Category category) throws ResourceNotFoundException {
+    public Category update(String id, Category category) throws ResourceNotFoundException {
         Category t = this.categoryRepository.findOne(id);
 
         if(t == null) {
-            throw new ResourceNotFoundException("Category");
+            throw new ResourceNotFoundException("Category", id);
         }
 
         if(!category.getName().isEmpty()) {
@@ -77,20 +81,45 @@ public class CategoryService {
         return t;
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         this.categoryRepository.delete(id);
     }
 
-    public Category addPlayer(Long categoryId, Player player, Integer level, Integer score) {
-        Category category = this.findOne(categoryId);
+    public Category savePlayerScore(String categoryId, Player player, Integer level, Integer score)
+            throws ResourceNotFoundException {
 
-        PlayerCategory playerCategory = new PlayerCategory(level, score);
-        playerCategory.setPlayer(player);
-        playerCategory.setCategory(category);
-        player.getPlayerCategories().add(playerCategory);
+        PlayerCategory playerCategory;
+        Category category = this.findOne(categoryId);
+        Optional<PlayerCategory> playerCategoryOptional = player.getPlayerCategories()
+                .stream().filter(c -> c.getCategory().equals(category)).findFirst();
+
+        if(playerCategoryOptional.isPresent()) {
+            playerCategory = playerCategoryOptional.get();
+            playerCategory.setLevel(level);
+            playerCategory.setScore(score);
+        } else {
+            playerCategory = new PlayerCategory(level, score);
+            playerCategory.setPlayer(player);
+            playerCategory.setCategory(category);
+            player.getPlayerCategories().add(playerCategory);
+        }
 
         this.categoryRepository.save(category);
 
         return category;
+    }
+
+    public List<LinkedHashMap> findTop(String id) {
+        List<LinkedHashMap> result = new ArrayList<>();
+        List<PlayerCategory> playerCategories = this.categoryRepository.findTop10Players(id);
+        playerCategories.stream().forEach(pc -> {
+            LinkedHashMap map = new LinkedHashMap();
+            map.put("player", pc.getPlayer().getName());
+            map.put("level", pc.getLevel());
+            map.put("score", pc.getScore());
+            result.add(map);
+        });
+
+        return result;
     }
 }
