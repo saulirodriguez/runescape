@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
-    private LoggerManager logger = LoggerManager.getInstance();
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -109,10 +108,8 @@ public class CategoryService {
     public List<LinkedHashMap> findTop(String id) {
         List<LinkedHashMap> result = new ArrayList<>();
         if(id.equals("overall")) {
-            System.out.println("AQUIII");
             findTopOverall(result);
         } else {
-            System.out.println("NOOO");
             List<PlayerCategory> playerCategories = this.categoryRepository.findTop10Players(id);
 
             playerCategories.stream().forEach(pc -> {
@@ -127,7 +124,7 @@ public class CategoryService {
         return result;
     }
 
-    public void findTopOverall(List<LinkedHashMap> result) {
+    private void findTopOverall(List<LinkedHashMap> result) {
         List<Object[]> playerCategories = this.categoryRepository.findTop10PlayersOverall();
 
         playerCategories.stream().forEach(pc -> {
