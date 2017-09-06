@@ -5,6 +5,7 @@ import com.agilesolutions.runescape.model.Category;
 import com.agilesolutions.runescape.model.Player;
 import com.agilesolutions.runescape.model.PlayerCategory;
 import com.agilesolutions.runescape.repository.CategoryRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

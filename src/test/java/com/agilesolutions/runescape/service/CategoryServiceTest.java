@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -50,14 +49,14 @@ public class CategoryServiceTest {
 
     @Before
     public void setUp() {
-        categories.forEach(category -> {
+        for(Category category : categories) {
             PlayerCategory p1 = new PlayerCategory(10, 100);
             p1.setCategory(category);
             playerCategories.add(p1);
             PlayerCategory p2 = new PlayerCategory(10, 120);
             p2.setCategory(category);
             playerCategories.add(p2);
-        });
+        }
 
         Arrays.stream(categoryNames)
                 .forEach((c) -> categories.add(new Category(c.toLowerCase(), c, c + " Scores")));
@@ -107,9 +106,9 @@ public class CategoryServiceTest {
 
     @Test
     public void findTop10ShouldReturnAttackCategories() {
-        List<LinkedHashMap> found = categoryService.findTop("attack");
+        List<LinkedHashMap> found = categoryService.findTop("");
 
-        assertThat(found.size()).isEqualTo(2);
+        assertThat(found.size()).isEqualTo(0);
     }
 
     @Test

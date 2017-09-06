@@ -2,13 +2,13 @@ package com.agilesolutions.runescape.repository;
 
 import com.agilesolutions.runescape.model.Category;
 import com.agilesolutions.runescape.model.PlayerCategory;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, String> {

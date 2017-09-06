@@ -1,27 +1,27 @@
 package com.agilesolutions.runescape.controller;
 
-import com.agilesolutions.runescape.exception.ResourceNotFoundException;
-import com.agilesolutions.runescape.model.Category;
 import com.agilesolutions.runescape.service.CategoryService;
 import com.agilesolutions.runescape.service.Utilities;
 import com.agilesolutions.runescape.utils.ErrorInfo;
+import com.agilesolutions.runescape.exception.ResourceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/scoreboard")
 public class ScoreboardCtrl {
-    private String resource = "Category";
+    private String resource = "Scoreboard";
 
     @Autowired
     private CategoryService categoryService;

@@ -1,22 +1,17 @@
 package com.agilesolutions.runescape.controller;
 
-import com.agilesolutions.runescape.exception.BadRequestException;
-import com.agilesolutions.runescape.exception.NotAllowedException;
-import com.agilesolutions.runescape.exception.ResourceNotFoundException;
-import com.agilesolutions.runescape.model.Player;
-import com.agilesolutions.runescape.service.PlayerService;
-import com.agilesolutions.runescape.utils.ErrorInfo;
-import com.agilesolutions.runescape.model.Category;
-import com.agilesolutions.runescape.service.LoggerManager;
-import com.agilesolutions.runescape.service.CategoryService;
-import com.agilesolutions.runescape.service.Utilities;
-import org.aspectj.weaver.ast.Not;
+import com.agilesolutions.runescape.exception.*;
+import com.agilesolutions.runescape.service.*;
+import com.agilesolutions.runescape.model.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import com.agilesolutions.runescape.utils.ErrorInfo;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +22,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/category")
 public class CategoryCtrl {
-    private LoggerManager logger = LoggerManager.getInstance();
     private String resource = "Category";
 
     @Autowired

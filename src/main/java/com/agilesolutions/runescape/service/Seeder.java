@@ -7,7 +7,6 @@ import com.agilesolutions.runescape.repository.CategoryRepository;
 import com.agilesolutions.runescape.repository.PlayerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
