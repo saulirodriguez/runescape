@@ -8,10 +8,7 @@ import com.agilesolutions.runescape.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -111,15 +108,34 @@ public class CategoryService {
 
     public List<LinkedHashMap> findTop(String id) {
         List<LinkedHashMap> result = new ArrayList<>();
-        List<PlayerCategory> playerCategories = this.categoryRepository.findTop10Players(id);
-        playerCategories.stream().forEach(pc -> {
-            LinkedHashMap map = new LinkedHashMap();
-            map.put("player", pc.getPlayer().getName());
-            map.put("level", pc.getLevel());
-            map.put("score", pc.getScore());
-            result.add(map);
-        });
+        if(id.equals("overall")) {
+            System.out.println("AQUIII");
+            findTopOverall(result);
+        } else {
+            System.out.println("NOOO");
+            List<PlayerCategory> playerCategories = this.categoryRepository.findTop10Players(id);
+
+            playerCategories.stream().forEach(pc -> {
+                LinkedHashMap map = new LinkedHashMap();
+                map.put("player", pc.getPlayer().getName());
+                map.put("level", pc.getLevel());
+                map.put("score", pc.getScore());
+                result.add(map);
+            });
+        }
 
         return result;
+    }
+
+    public void findTopOverall(List<LinkedHashMap> result) {
+        List<Object[]> playerCategories = this.categoryRepository.findTop10PlayersOverall();
+
+        playerCategories.stream().forEach(pc -> {
+            LinkedHashMap map = new LinkedHashMap();
+            map.put("player", pc[1]);
+            map.put("level", pc[2]);
+            map.put("score", pc[3]);
+            result.add(map);
+        });
     }
 }

@@ -1,6 +1,7 @@
 package com.agilesolutions.runescape.controller;
 
 import com.agilesolutions.runescape.exception.BadRequestException;
+import com.agilesolutions.runescape.exception.NotAllowedException;
 import com.agilesolutions.runescape.exception.ResourceNotFoundException;
 import com.agilesolutions.runescape.model.Player;
 import com.agilesolutions.runescape.service.PlayerService;
@@ -9,6 +10,7 @@ import com.agilesolutions.runescape.model.Category;
 import com.agilesolutions.runescape.service.LoggerManager;
 import com.agilesolutions.runescape.service.CategoryService;
 import com.agilesolutions.runescape.service.Utilities;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -43,15 +45,20 @@ public class CategoryCtrl {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public ResponseEntity<Category> findOne(@PathVariable String id) throws ResourceNotFoundException {
+    public ResponseEntity<Category> findOne(@PathVariable String id) throws ResourceNotFoundException, NotAllowedException {
         this.utilities.logRequest("GET", "/category/" + id);
+
+        if(id.toLowerCase().equals("overall")) {
+            throw new NotAllowedException("Can't retrieve Overall category. You need to use /scoreboard/overall instead.");
+        }
+
         Category category = this.categoryService.findOne(id);
 
         return ResponseEntity.ok(category);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Category> create(@RequestBody LinkedHashMap reqBody) throws BadRequestException {
+    public ResponseEntity<Category> create(@RequestBody LinkedHashMap reqBody) throws BadRequestException, NotAllowedException {
         this.utilities.logRequest("POST", "/category");
         String id = reqBody.getOrDefault("id", "").toString().toLowerCase().split(" ")[0];
         String name = reqBody.getOrDefault("name", "").toString();
@@ -59,6 +66,9 @@ public class CategoryCtrl {
 
         if(id.isEmpty()) {
             this.utilities.throwMissingParametersError(this.resource, "id");
+        }
+        if(id.toLowerCase().equals("overall")) {
+            throw new NotAllowedException("Can't add Overall category");
         }
         if(name.isEmpty()) {
             name = id;
@@ -69,17 +79,25 @@ public class CategoryCtrl {
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public ResponseEntity<Category> put(@RequestBody LinkedHashMap reqBody, @PathVariable String id) throws ResourceNotFoundException {
+    public ResponseEntity<Category> put(@RequestBody LinkedHashMap reqBody, @PathVariable String id)
+            throws ResourceNotFoundException, NotAllowedException {
+
         this.utilities.logRequest("PUT", "/category/" + id);
         String name = reqBody.getOrDefault("name", "").toString();
         String description = reqBody.getOrDefault("description", "").toString();
 
+        if(id.toLowerCase().equals("overall")) {
+            throw new NotAllowedException("Can't update Overall category");
+        }
         return ResponseEntity.ok(this.categoryService.update(id, new Category(id, name, description)));
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable String id) throws NotAllowedException{
         this.utilities.logRequest("DELETE", "/category/" + id);
+        if(id.toLowerCase().equals("overall")) {
+            throw new NotAllowedException("Can't delete Overall category");
+        }
         this.categoryService.delete(id);
     }
 
@@ -120,6 +138,11 @@ public class CategoryCtrl {
     })
     public ResponseEntity<ErrorInfo> BadRequestHandler(HttpServletRequest req, Exception e) {
         return this.utilities.generateError(this.resource, req, e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotAllowedException.class)
+    public ResponseEntity<ErrorInfo> NotAllowedHandler(HttpServletRequest req, Exception e) {
+        return this.utilities.generateError(this.resource, req, e, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(Exception.class)

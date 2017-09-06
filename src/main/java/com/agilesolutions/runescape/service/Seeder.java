@@ -29,7 +29,7 @@ public class Seeder implements CommandLineRunner {
     @Override
     public void run(String ...args) {
         logger.log("Running Seeder...");
-        String[] categoryNames = { "Overall", "Attack", "Defense", "Magic", "Cooking", "Crafting"};
+        String[] categoryNames = { "Attack", "Defense", "Magic", "Cooking", "Crafting"};
         List<Category> categories = new ArrayList<>();
         Arrays.stream(categoryNames)
                 .forEach((c) -> categories.add(new Category(c.toLowerCase(), c, c + " Scores")));
@@ -39,21 +39,22 @@ public class Seeder implements CommandLineRunner {
             players.add(new Player("Player " + i));
         }
 
-
         for(int i = 0; i < categories.size(); i++) {
             Category category = categories.get(i);
             for(int j = 0; j<players.size(); j++) {
-                double randLevel = Math.random() * 100 + 1;
-                double randScore = Math.random() * 1000;
+                if(category.getId() != "overall") {
+                    double randLevel = Math.random() * 100 + 1;
+                    double randScore = Math.random() * 1000;
 
-                Player player = players.get(j);
-                PlayerCategory playerCategory = new PlayerCategory((int)randLevel, (int)randScore);
-                playerCategory.setPlayer(player);
-                playerCategory.setCategory(category);
-                player.getPlayerCategories().add(playerCategory);
+                    Player player = players.get(j);
+                    PlayerCategory playerCategory = new PlayerCategory((int)randLevel, (int)randScore);
+                    playerCategory.setPlayer(player);
+                    playerCategory.setCategory(category);
+                    player.getPlayerCategories().add(playerCategory);
+                }
             }
         }
-//        this.categoryRepository.save(categories);
+
         this.categoryRepository.save(categories);
         this.playerRepository.save(players);
     }

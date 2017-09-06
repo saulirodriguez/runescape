@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, String> {
@@ -17,4 +18,11 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
     default List<PlayerCategory> findTop10Players(String id) {
         return findPlayerCategories(id, new PageRequest(0, 10));
     }
+
+    default List<Object[]> findTop10PlayersOverall() {
+        return findCategoriesOverall(new PageRequest(0, 10));
+    }
+
+    @Query("SELECT pc.player.id, pc.player.name, SUM(pc.level), SUM(pc.score) FROM PlayerCategory pc GROUP BY pc.player.id, pc.player.name ORDER BY SUM(pc.score) DESC")
+    public List<Object[]> findCategoriesOverall(Pageable pageable);
 }

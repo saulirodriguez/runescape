@@ -27,6 +27,7 @@ public class Utilities {
 
     public ResponseEntity<ErrorInfo> generateError(String resource, HttpServletRequest req, Exception e, HttpStatus status) {
         this.logRequest(req, e);
+        e.printStackTrace(System.out);
         ErrorInfo error = new ErrorInfo(resource, e.getMessage(), req.getMethod(), req.getRequestURI());
         return new ResponseEntity<ErrorInfo>(error, status);
     }
